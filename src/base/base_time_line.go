@@ -1,5 +1,9 @@
-// test_content
-package main
+// base_time_line
+package base
+
+import (
+	"fmt"
+)
 
 import (
 	"context"
@@ -8,7 +12,7 @@ import (
 	"time"
 )
 
-type time_st struct {
+type Time_st struct {
 	num_sec int //运行的时间
 	num_men int //变化的人数
 	status  int //状态1：平均递增；2：保持不变；3：平均递减
@@ -20,23 +24,33 @@ type time_run struct {
 	status  int //状态1：增；2：保持不变；3：减
 }
 
-func main() {
-	var time_list []time_st
-	// time_list = append(time_list, time_st{status: 1, num_sec: 5, num_men: 13})
-	// time_list = append(time_list, time_st{status: 1, num_sec: 13, num_men: 5})
-	// time_list = append(time_list, time_st{status: 1, num_sec: 5, num_men: 5})
-	time_list = append(time_list, time_st{status: 1, num_sec: 1, num_men: 2300})
-	time_list = append(time_list, time_st{status: 2, num_sec: 35, num_men: 0})
-	time_list = append(time_list, time_st{status: 3, num_sec: 1, num_men: 2300})
-	// time_list = append(time_list, time_st{status: 1, num_sec: 5, num_men: 5})
-	// time_list = append(time_list, time_st{status: 3, num_sec: 13, num_men: 5})
-	// time_list = append(time_list, time_st{status: 3, num_sec: 5, num_men: 5})
-	var run_list []time_run
-	// now_men := 0
+var time_list []time_st //存放时间对应的序列
+var run_list []time_run //存放执行对应的时间序列
+
+//方法用户添加时间计划
+func Add_time_list(st Time_st) string {
+	if st.num_sec == nil || st.num_sec <= 0 {
+		st.num_sec = 1
+	}
+	if st.num_men == nil || st.num_men <= 0 {
+		st.num_men = 1
+	}
+	if st.status == nil || st.status != 1 || st.status != 2 || st.status != 3 {
+		return "时间方式不正确，错误：1004"
+	}
+	time_list = append(time_list, st)
+	return nil
+}
+
+//方法用户计算时间计划对应的运行计划
+func Calc_time_run() string {
+	if len(time_list) == 0 {
+		return "没有时间计划，无法计算，错误：1003"
+	}
 	for _, time_st_1 := range time_list {
 		switch time_st_1.status {
 		case 1:
-			// fmt.Println(time_st_1)
+			//增加人员
 			if time_st_1.num_men > time_st_1.num_sec {
 				ts := time_st_1.num_men / time_st_1.num_sec
 				is_more := time_st_1.num_men % time_st_1.num_sec
@@ -74,10 +88,10 @@ func main() {
 			}
 
 		case 2:
-			// fmt.Println(time_st_1)
+			// 人员保持不变
 			run_list = append(run_list, time_run{status: 2, num_sec: time_st_1.num_sec, num_men: 0})
 		case 3:
-			// fmt.Println(time_st_1)
+			// 人员减少
 			if time_st_1.num_men > time_st_1.num_sec {
 				ts := time_st_1.num_men / time_st_1.num_sec
 				is_more := time_st_1.num_men % time_st_1.num_sec
@@ -114,36 +128,38 @@ func main() {
 
 			}
 		default:
-			fmt.Print("计算时间序列发生错误1001")
-			return
+
+			return "计算时间序列发生错误,错误：1001"
 
 		}
 
 	}
-	// fmt.Println(run_list)
+	return nil
+
+}
+
+type run_func func(ctx context.Context, now_men int)
+
+func Xxx(fun run_func) string {
 	now_men := 0
-	// now_time := 0
 	var context_cancel_list []context.CancelFunc
 	for _, run_l := range run_list {
 		switch run_l.status {
 		case 1:
-			// now_men += run_l.num_men
 			for i := 0; i < run_l.num_men; i++ {
 				now_men++
 				ctxa, cancel := context.WithCancel(context.Background())
 				context_cancel_list = append(context_cancel_list, cancel)
-				go work(ctxa, "work"+strconv.Itoa(now_men))
+				// go work(ctxa, "work"+strconv.Itoa(now_men))
+				go fun(ctxa, now_men)
 			}
 			for i := 0; i < run_l.num_sec; i++ {
 
 				time.Sleep(time.Second)
-
-				// print_line(now_men)
 			}
 
 		case 2:
 			for i := 0; i < run_l.num_sec; i++ {
-				// now_men += run_l.num_men
 				time.Sleep(time.Second)
 
 			}
@@ -162,35 +178,9 @@ func main() {
 
 			}
 		default:
-			fmt.Print("显示时间序列发生错误1002")
-			return
+			return "显示运行时间序列发生错误，1002"
 
 		}
 	}
-
-	// go work(ctxa, "work1")
-	// time.Sleep(time.Second)
-	// cancel()
-	// time.Sleep(3 * time.Second)
-	time.Sleep(5 * time.Second)
-}
-
-// func print_line(num int) {
-// 	for i := 0; i < num; i++ {
-// 		fmt.Print("|")
-// 	}
-// 	fmt.Println("                                                                      -", num)
-// }
-
-func work(ctx context.Context, name string) {
-	for {
-		select {
-		case <-ctx.Done():
-			fmt.Println(name, " get message to quit")
-			return
-		default:
-			fmt.Println(name, " is running")
-			time.Sleep(time.Second)
-		}
-	}
+	return nil
 }
