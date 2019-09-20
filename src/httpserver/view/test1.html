@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html style="height: 100%">
+
+<head>
+    <title>tools</title>
+</head>
+
+<body style="height: 100%">
+<input style='width:80%' id='path'>  <input type='button' value='读取' onclick='du(this)'>
+<iframe src="" id='mainIframe' width="100%" height="95%" frameborder="0" scrolling="no"></iframe>
+<script>
+function du(a){
+
+a.style.display='none'
+zhi=document.getElementById('path').value
+if (zhi.indexOf('http')==-1){
+zhi='http://'+zhi
+}
+document.getElementById('path').style.display='none'
+document.getElementById('mainIframe').src=zhi
+}
+</script>
+<script>
+
+    iframe_add_loadevent();
+    function  iframe_add_loadevent() {
+        var my_frame =document.getElementById('mainIframe');
+        //alert(1);
+        if(my_frame){
+            //alert(2);
+            if(my_frame.attachEvent){ //ie
+                //alert(3);
+                my_frame.onreadystatechange=function () {
+                    if (this.readState == 'complete') {
+                        ajaxSend(this.contentWindow.XMLHttpRequest, onAjaxSend);
+
+                    }
+                };
+            } else{  //other
+               // alert(4);
+			   //console.log(my_frame)
+                    my_frame.onload = function () {
+                        //alert(5);
+                        ajaxSend(this.contentWindow.XMLHttpRequest, onAjaxSend);
+                    };
+					my_frame.onhaschange=function(){
+					console.log(12313)
+					}
+					
+
+            }
+        }
+//        if(my_frame){
+//            my_frame.onload = function () {
+//                ajaxSend(this.contentWindow.XMLHttpRequest, onAjaxSend);
+//            }
+//        }
+
+    }
+    function ajaxSend(objectOfXMLHttpRequest, callback) {
+       // alert(10);
+
+        // http://stackoverflow.com/questions/3596583/javascript-detect-an-ajax-event
+
+        if(!callback){
+
+            return;
+
+        }
+
+        var s_ajaxListener = new Object();
+
+        s_ajaxListener.tempOpen = objectOfXMLHttpRequest.prototype.open;
+
+        s_ajaxListener.tempSend = objectOfXMLHttpRequest.prototype.send;
+
+        s_ajaxListener.callback = function () {
+
+            // this.method :the ajax method used
+
+            // this.url :the url of the requested script (including query string, if any) (urlencoded)
+
+            // this.data :the data sent, if any ex: foo=bar&a=b (urlencoded)
+
+            //alert(2);
+            //alert(this.method);
+            callback(this.method, this.url, this.data);
+
+        }
+
+
+
+        objectOfXMLHttpRequest.prototype.open = function(a,b) {
+
+            if (!a) var a='';
+
+            if (!b) var b='';
+
+            s_ajaxListener.tempOpen.apply(this, arguments);
+
+            s_ajaxListener.method = a;
+
+            s_ajaxListener.url = b;
+
+            if (a.toLowerCase() == 'get') {
+
+                s_ajaxListener.data = b.split('?');
+
+                s_ajaxListener.data = s_ajaxListener.data[1];
+
+            }
+
+        }
+
+
+
+        objectOfXMLHttpRequest.prototype.send = function(a,b) {
+
+            if (!a) var a='';
+
+            if (!b) var b='';
+
+            s_ajaxListener.tempSend.apply(this, arguments);
+
+            if(s_ajaxListener.method.toLowerCase() == 'post') {
+
+                s_ajaxListener.data = a;
+
+            }
+
+            s_ajaxListener.callback();
+
+        }
+
+    }
+
+    function onAjaxSend(method, url, data) {
+       // alert('ajax');
+        console.log("method:"+method);
+        console.log(url);
+        console.log(data);
+
+    }
+
+</script>
+</body>
+
+</html>
