@@ -7,9 +7,9 @@ import (
 )
 
 type Time_st struct {
-	num_sec int //运行的时间
-	num_men int //变化的人数
-	status  int //状态1：平均递增；2：保持不变；3：平均递减
+	Num_sec int //运行的时间
+	Num_men int //变化的人数
+	Status  int //状态1：平均递增；2：保持不变；3：平均递减
 }
 
 type time_run struct {
@@ -23,14 +23,14 @@ var run_list []time_run //存放执行对应的时间序列
 
 //方法用户添加时间计划
 func Add_time_list(st Time_st) string {
-	if st.num_sec <= 0 {
-		st.num_sec = 1
+	if st.Num_sec <= 0 {
+		st.Num_sec = 1
 	}
-	if st.num_men <= 0 {
-		st.num_men = 1
+	if st.Num_men <= 0 {
+		st.Num_men = 1
 	}
 	// if st.status != 1 || st.status != 2 || st.status != 3 {
-	if st.status < 1 || st.status > 3 {
+	if st.Status < 1 || st.Status > 3 {
 		return "时间方式不正确，错误：1004"
 	}
 	time_list = append(time_list, st)
@@ -38,16 +38,16 @@ func Add_time_list(st Time_st) string {
 }
 
 func calc_one_time_run(time_st_1 Time_st) string {
-	switch time_st_1.status {
+	switch time_st_1.Status {
 	case 1:
 		//增加人员
-		if time_st_1.num_men > time_st_1.num_sec {
-			ts := time_st_1.num_men / time_st_1.num_sec
-			is_more := time_st_1.num_men % time_st_1.num_sec
+		if time_st_1.Num_men > time_st_1.Num_sec {
+			ts := time_st_1.Num_men / time_st_1.Num_sec
+			is_more := time_st_1.Num_men % time_st_1.Num_sec
 			real_num := 0
-			for i := 0; i < time_st_1.num_sec; i++ {
+			for i := 0; i < time_st_1.Num_sec; i++ {
 				i2 := i + 1
-				if (is_more*i2/time_st_1.num_sec - real_num) < 1 {
+				if (is_more*i2/time_st_1.Num_sec - real_num) < 1 {
 					run_list = append(run_list, time_run{status: 1, num_sec: 1, num_men: ts})
 				} else {
 					run_list = append(run_list, time_run{status: 1, num_sec: 1, num_men: (ts + 1)})
@@ -55,13 +55,13 @@ func calc_one_time_run(time_st_1 Time_st) string {
 				}
 			}
 
-		} else if time_st_1.num_men < time_st_1.num_sec {
-			ts := time_st_1.num_sec / time_st_1.num_men
-			is_more := time_st_1.num_sec % time_st_1.num_men
+		} else if time_st_1.Num_men < time_st_1.Num_sec {
+			ts := time_st_1.Num_sec / time_st_1.Num_men
+			is_more := time_st_1.Num_sec % time_st_1.Num_men
 			real_num := 0
-			for i := 0; i < time_st_1.num_men; i++ {
+			for i := 0; i < time_st_1.Num_men; i++ {
 				i2 := i + 1
-				if (is_more*i2/time_st_1.num_men - real_num) < 1 {
+				if (is_more*i2/time_st_1.Num_men - real_num) < 1 {
 					run_list = append(run_list, time_run{status: 1, num_sec: ts, num_men: 1})
 				} else {
 					run_list = append(run_list, time_run{status: 1, num_sec: (ts + 1), num_men: 1})
@@ -70,7 +70,7 @@ func calc_one_time_run(time_st_1 Time_st) string {
 			}
 
 		} else {
-			for i := 0; i < time_st_1.num_men; i++ {
+			for i := 0; i < time_st_1.Num_men; i++ {
 				run_list = append(run_list, time_run{status: 1, num_sec: 1, num_men: 1})
 
 			}
@@ -79,16 +79,16 @@ func calc_one_time_run(time_st_1 Time_st) string {
 
 	case 2:
 		// 人员保持不变
-		run_list = append(run_list, time_run{status: 2, num_sec: time_st_1.num_sec, num_men: 0})
+		run_list = append(run_list, time_run{status: 2, num_sec: time_st_1.Num_sec, num_men: 0})
 	case 3:
 		// 人员减少
-		if time_st_1.num_men > time_st_1.num_sec {
-			ts := time_st_1.num_men / time_st_1.num_sec
-			is_more := time_st_1.num_men % time_st_1.num_sec
+		if time_st_1.Num_men > time_st_1.Num_sec {
+			ts := time_st_1.Num_men / time_st_1.Num_sec
+			is_more := time_st_1.Num_men % time_st_1.Num_sec
 			real_num := 0
-			for i := 0; i < time_st_1.num_sec; i++ {
+			for i := 0; i < time_st_1.Num_sec; i++ {
 				i2 := i + 1
-				if (is_more*i2/time_st_1.num_sec - real_num) < 1 {
+				if (is_more*i2/time_st_1.Num_sec - real_num) < 1 {
 					run_list = append(run_list, time_run{status: 3, num_sec: 1, num_men: ts})
 				} else {
 					run_list = append(run_list, time_run{status: 3, num_sec: 1, num_men: (ts + 1)})
@@ -96,13 +96,13 @@ func calc_one_time_run(time_st_1 Time_st) string {
 				}
 			}
 
-		} else if time_st_1.num_men < time_st_1.num_sec {
-			ts := time_st_1.num_sec / time_st_1.num_men
-			is_more := time_st_1.num_sec % time_st_1.num_men
+		} else if time_st_1.Num_men < time_st_1.Num_sec {
+			ts := time_st_1.Num_sec / time_st_1.Num_men
+			is_more := time_st_1.Num_sec % time_st_1.Num_men
 			real_num := 0
-			for i := 0; i < time_st_1.num_men; i++ {
+			for i := 0; i < time_st_1.Num_men; i++ {
 				i2 := i + 1
-				if (is_more*i2/time_st_1.num_men - real_num) < 1 {
+				if (is_more*i2/time_st_1.Num_men - real_num) < 1 {
 					run_list = append(run_list, time_run{status: 3, num_sec: ts, num_men: 1})
 				} else {
 					run_list = append(run_list, time_run{status: 3, num_sec: (ts + 1), num_men: 1})
@@ -111,7 +111,7 @@ func calc_one_time_run(time_st_1 Time_st) string {
 			}
 
 		} else {
-			for i := 0; i < time_st_1.num_men; i++ {
+			for i := 0; i < time_st_1.Num_men; i++ {
 				run_list = append(run_list, time_run{status: 3, num_sec: 1, num_men: 1})
 
 			}
