@@ -1,5 +1,5 @@
 // testnet
-package main
+package main1
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func main() {
+func main()1 {
 	srv := &http.Server{Addr: "0.0.0.0:7004"}
 
 	// 指定路径下的处理器

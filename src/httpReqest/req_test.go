@@ -7,5 +7,11 @@ import (
 )
 
 func Test001(test *testing.T) {
-	fmt.Println(reqest("get", "http://192.168.1.3:7004/test", "", 30))
+
+	ss := Reqest("get", "http://localhost:7004/test", "", 30)
+	// s := bufio.NewScanner(ss.Response_data).Text()
+
+	// fmt.Println(s)
+	fmt.Println(ss)
+	fmt.Println(ss.End_time - ss.Start_time)
 }

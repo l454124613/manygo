@@ -29,7 +29,7 @@ func init() {
 	flag.Usage = usage
 }
 
-func main() {
+func main1() {
 	flag.Parse()
 	if h {
 		flag.Usage()
